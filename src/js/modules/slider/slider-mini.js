@@ -3,6 +3,7 @@ import Slider from "./slider";
 export default class MiniSlider extends Slider {
     constructor (container, prev, next, activeClass, animate, autoplay) {
         super (container, prev, next, activeClass, animate, autoplay);
+        this.paused = false;
     }
 
 
@@ -49,6 +50,7 @@ export default class MiniSlider extends Slider {
         }
 
     }
+
     bindTriggers() {
         this.next.addEventListener('click' , () => this.nextSlide());
 
@@ -67,6 +69,11 @@ export default class MiniSlider extends Slider {
     }
 
 
+    activateAnimation() {
+        this.paused = setInterval(() => this.nextSlide(), 5000);
+     }
+     
+
     init() {
        this.container.style.cssText = ` 
             display: flex;
@@ -77,8 +84,17 @@ export default class MiniSlider extends Slider {
        this.bindTriggers();
        this.decorizeSlides();
 
-        if (this.autoplay) {
-            setInterval(() => this.nextSlide(), 5000);
-        }
+       if (this.autoplay) {
+        this.container.addEventListener('mouseenter', () => clearInterval(this.paused));
+        this.next.addEventListener('mouseenter', () => clearInterval(this.paused));
+        this.prev.addEventListener('mouseenter', () => clearInterval(this.paused));
+        this.container.addEventListener('mouseleave', () => this.activateAnimation());
+        this.next.addEventListener('mouseleave', () => this.activateAnimation());
+        this.prev.addEventListener('mouseleave', () => this.activateAnimation());
+        this.activateAnimation();
+     }
+
+    
+
     }
 }
